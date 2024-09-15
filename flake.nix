@@ -95,8 +95,9 @@ in
         echo " "
 
 
-
+        export PATH=$(pwd):$PATH
         ln -sf ${python-312}/bin/python ./python
+        ln -sf ${pkgs.python312Packages.uvicorn}/bin/uvicorn ./uvicorn
 
 
         
