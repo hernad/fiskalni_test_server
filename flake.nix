@@ -27,7 +27,7 @@ let
         ];
     
         packageOverrides = pkgs: {
-          python311 = (import ./python311.nix {inherit pkgs lib ft;});
+          python312 = (import ./python312.nix {inherit pkgs lib ft;});
         };
     };
 
@@ -56,7 +56,7 @@ let
        }
     );
 
-    python-311 = self.packages.${system}.odoo-python-311;
+    python-312 = self.packages.${system}.python-312;
     
     
 in
@@ -72,12 +72,12 @@ in
        python-312 = (import ./python-312.nix {inherit pkgs;}); 
        
       
-       odoo-python-311-pip = pkgs.python311.withPackages (ps: [
+       python-312-pip = pkgs.python312.withPackages (ps: [
           ps.pip
           ps.virtualenv
        ]);
 
-       my-wkhtmltopdf = pkgs.wkhtmltopdf-bin;
+       #my-wkhtmltopdf = pkgs.wkhtmltopdf-bin;
        
      });
 
@@ -96,7 +96,7 @@ in
 
 
 
-        ln -sf ${python-311}/bin/python ./python
+        ln -sf ${python-312}/bin/python ./python
 
 
         
