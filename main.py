@@ -1,6 +1,10 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException, status, Request
 from pydantic import BaseModel
+#from fastapi.security import OAuth2PasswordBearer
+import json
+
+API_KEY = "0123456789abcdef0123456789abcdef"
 
 app = FastAPI()
 
@@ -32,16 +36,34 @@ class Invoice(BaseModel):
     invoiceRequest: int
     invoiceType: str
 
+# https://stackoverflow.com/questions/67307159/what-is-the-actual-use-of-oauth2passwordbearer
+# {"access_token": access_token, "token_type":"bearer"}
+
+#def api_token():
+#    return
+#    '{ "access_token":"%s", "token_type":"bearer"}' % (API_KEY)
+
 @app.post("/api/invoices")
-async def invoice(invoice_data: Invoice):
+async def invoice(req: Request, invoice_data: Invoice):
+
+    # https://github.com/fastapi/fastapi/discussions/9601
+
     request = invoice_data.invoiceRequest
     type = invoice_data.invoiceType
-    return {
-        "msg": "SVE_JE_OK",
-        "invoiceRequest": request,
-        "invoiceType": type,
-    }
+    token = req.headers["Authorization"].replace("Bearer ", "").strip()
+
+    if token != API_KEY:
+        raise HTTPException(
+            status_code = status.HTTP_401_UNAUTHORIZED, detail="Unauthorized API-KEY %s" % (token)
+        )
+    else:
+        return {
+            "msg": "SVE_JE_OK",
+            "token": token,
+            "invoiceRequest": request,
+            "invoiceType": type,
+        }
  
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, access_log=False, workers=2)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, access_log=False, workers=1)
