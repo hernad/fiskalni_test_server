@@ -398,7 +398,7 @@ async def get_status(req: Request):
         model = "OFS P5 EFU LPFR",
         mssc = [],
         protocolVersion = "2.0",
-        sdcDateTime = "2024-03-11T23:03:24.390+01:00",
+        sdcDateTime = "2024-09-15T23:03:24.390+01:00",
         softwareVersion = "2.0",
         supportedLanguages = [
          "bs-BA",
@@ -416,6 +416,8 @@ class PaymentLine(BaseModel):
 
 
 class ItemLine(BaseModel):
+    name: str
+    labels: list[str] = []
     totalAmount: float
     unitPrice: float
     quantity: float
@@ -430,44 +432,6 @@ class InvoiceRequest(BaseModel):
 
 class InvoiceData(BaseModel):
     invoiceRequest: InvoiceRequest
-
-
-# {
-#  "address": "Prvog Krajiškog Korpusa 18",
-#  "businessName": "SIRIUS2010 doo Banja Luka",
-#  "district": "Banja Luka",
-#  "encryptedInternalData": "Vvwq4nVn/wIQ...",
-#  "invoiceCounter": "100/138ПП",
-#  "invoiceCounterExtension": "ПП",
-#  "invoiceImageHtml": null,
-#  "invoiceImagePdfBase64": null,
-#  "invoiceImagePngBase64": null,
-#  "invoiceNumber": "RX4F7Y5L-RX4F7Y5L-138",
-#  "journal": "=========== ФИСКАЛНИ РАЧУН ===========\r\n             4402692070009            \r\n       SIRIUS2010 doo Banja Luka      \r\n       SIRIUS2010 doo Banja Luka      \r\n      Prvog Krajiškog Korpusa 18      \r\n              Banja Luka              \r\nКасир:                        Radnik 1\r\nЕСИР број:                      13/2.0\r\n----------- ПРОМЕТ ПРОДАЈА -----------\r\nАртикли                               \r\n======================================\r\nНазив  Цена        Кол.         Укупно\r\nArtikl 1 (F)                          \r\n      50,00       2,000         100,00\r\n--------------------------------------\r\nУкупан износ:                   100,00\r\nГотовина:                       100,00\r\n======================================\r\nОзнака    Назив    Стопа         Порез\r\nF          ECAL      11%          9,91\r\n--------------------------------------\r\nУкупан износ пореза:              9,91\r\n======================================\r\nПФР вријеме:      12.03.2024. 07:47:09\r\nПФР бр.рач:      RX4F7Y5L-RX4F7Y5L-138\r\nБројач рачуна:               100/138ПП\r\n======================================\r\n======== КРАЈ ФИСКАЛНОГ РАЧУНА =======\r\n",
-#  "locationName": "SIRIUS2010 doo Banja Luka",
-#  "messages": "Успешно",
-#  "mrc": "01-0001-WPYB002248000772",
-#  "requestedBy": "RX4F7Y5L",
-#  "sdcDateTime": "2024-03-12T07:47:09.548+01:00",
-#  "signature": "Mw+IB0vgnaMjYrwA7m7zhtRseRIZ...",
-#  "signedBy": "RX4F7Y5L",
-#  "taxGroupRevision": 2,
-#  "taxItems": [
-#    {
-#      "amount": 9.9099,
-#      "categoryName": "ECAL",
-#      "categoryType": 0,
-#      "label": "F",
-#      "rate": 11
-#    }
-#  ],
-#  "tin": "4402692070009",
-#  "totalAmount": 100,
-#  "totalCounter": 138,
-#  "transactionTypeCounter": 100,
-#  "verificationQRCode": "R0lGODlhhAGEAf...",
-#  "verificationUrl": "https://sandbox.suf.poreskaupravars.org/v/?vl=A1JYNEY3WTVMUlg0....="
-#}
 
 
 class TaxItems(BaseModel):
@@ -515,6 +479,15 @@ async def invoice(req: Request, invoice_data: InvoiceData):
     type = invoice_data.invoiceRequest.invoiceType
 
     items_length = len(invoice_data.invoiceRequest.items)
+
+    totalValue = 0
+    cStavke = ""
+    for item in invoice_data.invoiceRequest.items:
+        print(item)
+        totalValue += item.totalAmount
+        cStavke += "%s  %.2f  %.2f %.2f\r\n" % (item.name, item.quantity, item.unitPrice, item.totalAmount)
+
+
     payments_length = len(invoice_data.invoiceRequest.payment)
     cashier = invoice_data.invoiceRequest.cashier
 
@@ -532,18 +505,23 @@ async def invoice(req: Request, invoice_data: InvoiceData):
             invoiceImagePdfBase64 = None,
             invoiceImagePngBase64 = None,
             invoiceNumber = "RX4F7Y5L-RX4F7Y5L-138",
-            journal = "=========== FAKE RAČUN ===========\r\n             4402692070009            \r\n       SIRIUS2010 doo Banja Luka      \r\n       Sigma-com doo Zenica      \r\n      7. Muslimanske Brigade 77      \r\n              Zenica              \r\nKasir:                        Radnik 1\r\nESIR BROJ:                      13/2.0\r\n----------- PROMET PRODAJA -----------\r\nАrtikli                               \r\n======================================\r\nNaziv  Cijena        Kol.         Ukupno\r\nArtikl 1 (F)                          \r\n      50,00       2,000         100,00\r\n--------------------------------------\r\nUkupan iznos:                   100,00\r\nGotovina:                       100,00\r\n======================================\r\nOznaka    Naziv    Stopa    Porez\r\nF          ECAL      11%          9,91\r\n--------------------------------------\r\nUkupan iznos poreza:              9,91\r\n======================================\r\nПФР вријеме:      12.03.2024. 07:47:09\r\nOFS br. rač:      RX4F7Y5L-RX4F7Y5L-138\r\nBrojač računa:               100/138ZE\r\n======================================\r\n======== KRAJ FISKALNOG RAČUNA =======\r\n",
+            journal = "=========== FAKE RAČUN ===========\r\n             4402692070009            \r\n       SIRIUS2010 doo Banja Luka      \r\n       Sigma-com doo Zenica      \r\n      7. Muslimanske Brigade 77      \r\n              Zenica              \r\nKasir:                        Radnik 1\r\nESIR BROJ:                      13/2.0\r\n----------- PROMET PRODAJA -----------\r\nАrtikli                               \r\n======================================\r\nNaziv  Cijena        Kol.         Ukupno\r\n " + 
+                       cStavke +
+                       "--------------------------------------\r\n"
+                       + "Ukupan iznos:                   " + "%.2f" % (totalValue) +
+                       "\r\nGotovina:                     " + "%.2f" % (totalValue) +
+                       "\r\n======================================\r\nOznaka    Naziv    Stopa    Porez\r\nF          ECAL      11%          9,91\r\n--------------------------------------\r\nUkupan iznos poreza:              9,91\r\n======================================\r\nПФР вријеме:      12.03.2024. 07:47:09\r\nOFS br. rač:      RX4F7Y5L-RX4F7Y5L-138\r\nBrojač računa:               100/138ZE\r\n======================================\r\n======== KRAJ FISKALNOG RAČUNA =======\r\n",
             locationName = "Sigma-com doo Zenica poslovnica Sarajevo",
             messages = "Uspješno",
             mrc = "01-0001-WPYB002248000772",
             requestedBy = "RX4F7Y5L",
-            sdcDateTime = "2024-03-12T07:47:09.548+01:00",
+            sdcDateTime = "2024-09-15T07:47:09.548+01:00",
             signature = "Mw+IB0vgnaMjYrwA7m7zhtRseRIZFAKE",
             signedBy = "RX4F7Y5L",
             taxGroupRevision = 2,
             taxItems = [ TaxItems(amount=9.9099, categoryName="ECAL", categoryType = 0, label = "F", rate = 11) ],
             tin = "4402692070009",
-            totalAmount = 100.00,
+            totalAmount = totalValue,
             totalCounter = 138,
             transactionTypeCounter = 100,
             verificationQRCode = "R0lGODlhhAGEAfFAKE",
