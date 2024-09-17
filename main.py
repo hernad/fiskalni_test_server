@@ -15,6 +15,155 @@ def root():
     return {"hello": name}
 
 
+# dostupan
+#curl --location 'http://127.0.0.1:3566/api/attention' \
+#--header 'Authorization: Bearer 0123456789abcdef0123456789abcdef'
+
+# settings get
+# curl --location 'http://127.0.0.1:3566/api/settings' \
+# --header 'Authorization: Bearer 0123456789abcdef0123456789abcdef'
+
+#{
+#  "allowedPaymentTypes": [
+#    0,
+#    1,
+#    2,
+#    3,
+#    4,
+#    5,
+#    6
+#  ],
+#  "apiKey": "****",
+#  "applicationLanguage": "sr-Cyrl-RS", <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+#  "authorizeLocalClients": false,
+#  "authorizeRemoteClients": false,
+#  "availableDisplayDevices": [],
+#  "availableEftPosDevices": [
+#    "Internal"
+#  ],
+#  "availableEftPosProtocols": [
+#    "ASoftPos"
+#  ],
+#  "availablePrinterTypes": [
+#    "EscPos"
+#  ],
+#  "availablePrinters": [
+#    "Internal"
+#  ],
+#  "availableScaleDevices": [],
+#  "availableScaleProtocols": [
+#    "Aclas PS6X D0",
+#    "Apollo",
+#    "Birotehna OB1/OP1",
+#    "Dialog 06",
+#    "Dollar",
+#    "Ecr-Posnet",
+#    "Tisa"
+#  ],
+#  "customTabName": null,
+#  "customTabUrl": null,
+#  "displayDeviceName": null,
+#  "displayDeviceRs232BaudRate": null,
+#  "displayDeviceRs232DataBits": null,
+#  "displayDeviceRs232HardwareFlowControl": null,
+#  "displayDeviceRs232Parity": null,
+#  "displayDeviceRs232StopBits": null,
+#  "displayEnabled": false,
+#  "displayHandler": null,
+#  "displayProtocol": null,
+#  "displayTextCodePage": null,
+#  "displayTextCols": null,
+#  "displayTextRows": null,
+#  "eFakturaApiKey": null,
+#  "eFakturaCompanyAddress": null,
+#  "eFakturaCompanyBankAccount": null,
+#  "eFakturaCompanyCity": null,
+#  "eFakturaCompanyEMail": null,
+#  "eFakturaCompanyName": null,
+#  "eFakturaCompanyPhone": null,
+#  "eFakturaCompanyRegistrationId": null,
+#  "eFakturaCompanyTaxId": null,
+#  "eFakturaTest": true,
+#  "eftPosCredentials": null,
+#  "eftPosDeviceName": "Test",
+#  "eftPosDeviceRs232BaudRate": null,
+#  "eftPosDeviceRs232DataBits": null,
+#  "eftPosDeviceRs232HardwareFlowControl": null,
+#  "eftPosDeviceRs232Parity": null,
+#  "eftPosDeviceRs232StopBits": null,
+#  "eftPosProtocol": "Test",
+#  "issueCopyOnRefund": false,
+#  "language": "sr-Cyrl-RS", <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+#  "languages": [
+#    "sr-RS",  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+#    "sr-Cyrl-RS", <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+#    "en-US" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+#  ],
+#  "lpfr": {
+#    "apiKey": "****",
+#    "authorizeLocalClients": false,
+#    "authorizeRemoteClients": false,
+#    "availableSmartCardReaders": [
+#      "PSAM"
+#    ],
+#    "canHaveMultipleSmartCardReaders": false,
+#    "externalStorageFolder": null,
+#    "languages": [
+#      "sr-RS",
+#      "sr-Cyrl-RS",
+#      "en-US"
+#    ],
+#    "password": "*****",
+#    "smartCardReaderName": null,
+#    "username": "admin"
+#  },
+#  "lpfrUrl": "http://127.0.0.1:3565/api/v3",
+#  "paperHeight": null,
+#  "paperMargin": null,
+#  "paperWidth": null,
+#  "posName": null,
+#  "printerDpi": null,
+#  "printerName": null,
+#  "printerType": "EscPos",
+#  "qrCodeSize": null,
+#  "receiptCustomCommandBegin": null,
+#  "receiptCustomCommandEnd": null,
+#  "receiptCutPaper": "CutPaper",
+#  "receiptDiscountText": null,
+#  "receiptFeedLinesBegin": 0,
+#  "receiptFeedLinesEnd": 3,
+#  "receiptFontSizeLarge": 24,
+#  "receiptFontSizeNormal": 19,
+#  "receiptFooterImage": null,
+#  "receiptFooterTextLines": null,
+#  "receiptHeaderImage": null,
+#  "receiptHeaderTextLines": null,
+#  "receiptLayout": "Slip",
+#  "receiptLetterSpacingCondensed": -0.05,
+#  "receiptLetterSpacingNormal": 0,
+#  "receiptOpenCashDrawer": "None",
+#  "receiptSplitMaxHeight": null,
+#  "receiptWidth": 386,
+#  "receiptsDelay": 5,
+#  "runUi": true,
+#  "scaleDeviceName": null,
+#  "scaleDeviceRs232BaudRate": 9600,
+#  "scaleDeviceRs232DataBits": 8,
+#  "scaleDeviceRs232HardwareFlowControl": 0,
+#  "scaleDeviceRs232Parity": 0,
+#  "scaleDeviceRs232StopBits": 1,
+#  "scaleProtocol": null,
+#  "syncReceipts": true,
+#  "vpfrCertificateAddress": null,
+#  "vpfrCertificateBusinessName": null,
+#  "vpfrCertificateCity": null,
+#  "vpfrCertificateCountry": null,
+#  "vpfrCertificateSerialNumber": null,
+#  "vpfrCertificateShopName": null,
+#  "vpfrClientCertificateBase64": null,
+#  "vpfrEnabled": false,
+#  "vpfrPac": null
+#}
 
 #curl --location 'http://127.0.0.1:3566/api/invoices' \
 #--header 'Authorization: Bearer 0123456789abcdef0123456789abcdef' \
@@ -45,6 +194,343 @@ def root():
 #    }
 #}'
 
+
+# curl post settings
+#curl --location 'http://127.0.0.1:3566/api/settings' \
+#--header 'Authorization: Bearer 0123456789abcdef0123456789abcdef' \
+#--header 'Content-Type: application/json' \
+#--data '{
+#    "authorizeLocalClients": false,
+#    "authorizeRemoteClients": true,
+#    "apiKey": "c0521663642496c82f79a55725302eba",
+#    "webserverAddress": "http://0.0.0.0:3566/"
+#}'
+
+
+#Pre korišćenja ESIR rešenja u produkciji preporučuje se provera i dodatno pojačaju sigurnosna podešavanja preko sledećih parametara:
+#
+#authorizeLocalClients (boolean) - vrednost true ako je potrebno da lokalni klijenti (aplikacije koje se izvršavaju na istom uređaju kao i ESIR) šalju API KEY uz svaki zahtev odnosno false u suprotnom. Preporuka je da se ovaj parametar podesi na true.
+#authorizeRemoteClients (boolean) - vrednost true ako je potrebno da udaljeni klijenti (aplikacije koje se izvršavaju na drugim računarima/uređajima i pristupaju ESIR API-u preko mreže/interneta) šalju API KEY uz svaki zahtev odnosno false u suprotnom. Nikako nije preporučljivo ovaj parametar staviti na false osim ukoliko ste sigurni da ste na drugi način obezbedili kontrolu pristupa Teron ESIR API-ju.
+#apiKey (string) - nova vrednost API KEY-a. Preporučuje se da promenite API KEY kako bi ste vi bili jedini koji ga znate.
+#webserverAddress (string) - IP adresa i port na kojoj se nalazi API. Ukoliko je dovoljan samo pristup lokalnim klijentima (aplikacijama na samom uređaju) preporuka je da se IP adresa promeni na 127.0.0.1 umesto 0.0.0.0 što će dodatno onemogućiti pristup API-u spolja. Dodatno ovaj poziv se može iskoristiti da se promeni i port na kojem se nalazi API ukoliko je to potrebno. Nakon promene ovog parametra neophodno je restartovati Teron ESIR kako bi se novi parametri primenili.
+
+# WORKFLOW
+#1. Proveriti da li su ESIR i PFR dostupni pozivom /api/attention (opisan u "Provera dostupnosti"). Ukoliko je odgovor negativan treba prikazati odgovarajuću poruku korisniku i posle par sekundi pokušati ponovo. Nastaviti ovu proveru bez ograničenja dok ESIR ne postane dostupan.
+# while
+
+#2. Samo ako se koristi LPFR: proveriti da li je bezbednosni element prisutan pozivom /api/status (opisan u "Provera statusa") i proverom da li se u spisku statusa u polju gsc nalazi kod 1300. Ukoliko se ovaj kod nalazi onda treba prikazati adekvatnu poruku korisniku da bezbednosni element nije prisutan i nastaviti ovu proveru sve dok se ne izgubi kod 1300.
+
+#3. Samo ako se koristi LPFR: proveriti dali je neophodan unos PIN-a pozivom /api/status i proverom da li se u spisku statusa u polju gsc nalazi kod 1500. 
+# Ukoliko se ovaj kod nalazi onda treba prikazati adekvatnan ekran korisniku za unos PIN-a i slanjem istog na /api/pin poziv za proveru (opsian u "Unos PIN-a bezbednosnog elementa"). Nakon uspešno unetog PIN-a se može nastaviti dalje sa radom.
+
+#4. Obaviti standardni unos svih elemenata računa i poslati na fiskalizaciju i štampu pozivom /api/invoices(opisan u "Fiskalizacija računa"). Ukoliko je vraćena greška da bezbednosni element nije prisutan (npr. korisnik je izvukao karticu u međuvremenu) onda se vratiti na korak 2. Ukoliko je vraćena greška da je neophodan unos PIN-a (npr. korisnik je izvukao i vratio istu ili drugu karticu) onda se vratiti na korak 3. U suprotnom ovaj API će vratiti grešku ukoliko postoji problem u sadržaju računa (koji treba prikazati korisniku adekvatno na ekranu) ili odgovor da je fiskalizacija i štampa uspešno obavljena u kom slučaju se može pristupiti unosom novog računa od koraka 2. U slučaju da je vraćena greška ona može biti geška pre fiskalizacije ili greška nakon fiskalizacije ali pre štampanja računa. U slučaju da je fiskalizacija obavljena ali je greška nastala prilikom štampe računa odgovor će pored informacija o grešci sadržati i polje invoiceResponse u kom slučaju je potrebno ispraviti grešku sa štampačem (npr. ukoliko nema papira) a potom ponoviti isti poziv ali uključiti i invoiceResponse polje što je signal Teron ESIR API-u da ne radi ponovo fiskalizaciju već samo da pokuša štampu ponovo.
+
+# 
+#curl --location 'http://127.0.0.1:3566/api/status' \
+#--header 'Authorization: Bearer 0123456789abcdef0123456789abcdef'
+
+#Ovaj poziv vraća status sistema za fiskalizaciju (LPFR ili VPFR u zavisnosti od podešavanja). 
+# Glavna polja u odgovoru od interesa za integraciju sa ESIR-om su:
+
+#sdcDateTime (timestamp) - trenutno vreme na PFR-u
+#gsc: (list of string) - niz status LPFR-a. Za spisak svih statusa konsultovati PURS dokumentaciju za LPFR, glavni statusi su opisani i prethodnoj sekciji u okviru opisa niza koraka prilikom fiskalizacije računa. Ovo polje ne postoji u slučaju korišćenja VPFR-a
+#uid (string) - UID bezbednosnog elementa (LPFR, ukoliko je ubačen) odnosno sertifikata (VPFR)
+
+#{
+#  "allTaxRates": [
+#    {
+#      "groupId": 1,
+#      "taxCategories": [
+#        {
+#          "categoryType": 0,
+#          "name": "Без ПДВ",
+#          "orderId": 4,
+#          "taxRates": [
+#            {
+#              "label": "Г",
+#              "rate": 0
+#            }
+#          ]
+#        },
+#        {
+#          "categoryType": 0,
+#          "name": "Није у ПДВ",
+#          "orderId": 1,
+#          "taxRates": [
+#            {
+#              "label": "А",
+#              "rate": 0
+#            }
+#          ]
+#        },
+#        {
+#          "categoryType": 0,
+#          "name": "О-ПДВ",
+#          "orderId": 2,
+#          "taxRates": [
+#            {
+#              "label": "Ђ",
+#              "rate": 20
+#            }
+#          ]
+#        },
+#        {
+#          "categoryType": 0,
+#          "name": "П-ПДВ",
+#          "orderId": 3,
+#          "taxRates": [
+#            {
+#              "label": "Е",
+#              "rate": 10
+#            }
+#          ]
+#        }
+#      ],
+#      "validFrom": "2021-11-01T02:00:00.000+01:00"
+#    },
+#    {
+#      "groupId": 6,
+#      "taxCategories": [
+#        {
+#          "categoryType": 0,
+#          "name": "Без ПДВ",
+#          "orderId": 4,
+#          "taxRates": [
+#            {
+#              "label": "Г",
+#              "rate": 0
+#            }
+#          ]
+#        },
+#        {
+#          "categoryType": 0,
+#          "name": "Није у ПДВ",
+#          "orderId": 1,
+#          "taxRates": [
+#            {
+#              "label": "А",
+#              "rate": 0
+#            }
+#          ]
+#        },
+#        {
+#          "categoryType": 0,
+#          "name": "О-ПДВ",
+#          "orderId": 2,
+#          "taxRates": [
+#            {
+#              "label": "Ђ",
+#              "rate": 20
+#            }
+#          ]
+#        },
+#        {
+#          "categoryType": 0,
+#          "name": "П-ПДВ",
+#          "orderId": 3,
+#          "taxRates": [
+#            {
+#              "label": "Е",
+#              "rate": 10
+#            }
+#          ]
+#        }
+#      ],
+#      "validFrom": "2014-01-01T00:00:00.000+01:00"
+#    },
+#    {
+#      "groupId": 3,
+#      "taxCategories": [
+#        {
+#          "categoryType": 0,
+#          "name": "Без ПДВ",
+#          "orderId": 4,
+#          "taxRates": [
+#            {
+#              "label": "Г",
+#              "rate": 0
+#            }
+#          ]
+#        },
+#        {
+#          "categoryType": 0,
+#          "name": "Није у ПДВ",
+#          "orderId": 1,
+#          "taxRates": [
+#            {
+#              "label": "А",
+#              "rate": 0
+#            }
+#          ]
+#        },
+#        {
+#          "categoryType": 0,
+#          "name": "О-ПДВ",
+#          "orderId": 2,
+#          "taxRates": [
+#            {
+#              "label": "Ђ",
+#              "rate": 20
+#            }
+#          ]
+#        },
+#        {
+#          "categoryType": 0,
+#          "name": "П-ПДВ",
+#          "orderId": 3,
+#          "taxRates": [
+#            {
+#              "label": "Е",
+#              "rate": 8
+#            }
+#          ]
+#        }
+#      ],
+#      "validFrom": "2012-10-01T00:00:00.000+02:00"
+#    },
+#    {
+#      "groupId": 2,
+#      "taxCategories": [
+#        {
+#          "categoryType": 0,
+#          "name": "Без ПДВ",
+#          "orderId": 4,
+#          "taxRates": [
+#            {
+#              "label": "Г",
+#              "rate": 0
+#            }
+#          ]
+#        },
+#        {
+#          "categoryType": 0,
+#          "name": "Није у ПДВ",
+#          "orderId": 1,
+#          "taxRates": [
+#            {
+#              "label": "А",
+#              "rate": 0
+#            }
+#          ]
+#        },
+#        {
+#          "categoryType": 0,
+#          "name": "О-ПДВ",
+#          "orderId": 2,
+#          "taxRates": [
+#            {
+#              "label": "Ђ",
+#              "rate": 18
+#            }
+#          ]
+#        },
+#        {
+#          "categoryType": 0,
+#          "name": "П-ПДВ",
+#          "orderId": 3,
+#          "taxRates": [
+#            {
+#              "label": "Е",
+#              "rate": 8
+#            }
+#          ]
+#        }
+#      ],
+#      "validFrom": "2005-01-01T00:00:00.000+01:00"
+#    }
+#  ],
+#  "currentTaxRates": {
+#    "groupId": 1,
+#    "taxCategories": [
+#      {
+#        "categoryType": 0,
+#        "name": "Без ПДВ",
+#        "orderId": 4,
+#        "taxRates": [
+#          {
+#            "label": "Г",
+#            "rate": 0
+#          }
+#        ]
+#      },
+#      {
+#        "categoryType": 0,
+#        "name": "Није у ПДВ",
+#        "orderId": 1,
+#        "taxRates": [
+#          {
+#            "label": "А",
+#            "rate": 0
+#          }
+#        ]
+#      },
+#      {
+#        "categoryType": 0,
+#        "name": "О-ПДВ",
+#        "orderId": 2,
+#        "taxRates": [
+#          {
+#            "label": "Ђ",
+#            "rate": 20
+#          }
+#        ]
+#      },
+#      {
+#        "categoryType": 0,
+#        "name": "П-ПДВ",
+#        "orderId": 3,
+#        "taxRates": [
+#          {
+#            "label": "Е",
+#            "rate": 10
+#          }
+#        ]
+#      }
+#    ],
+#    "validFrom": "2021-11-01T02:00:00.000+01:00"
+#  },
+#  "deviceSerialNumber": "01-0001-WPYB002248000772",
+#  "gsc": [
+#    "1300",
+#    "0210"
+#  ],
+#  "hardwareVersion": "1.0",
+#  "lastInvoiceNumber": "RX4F7Y5L-RX4F7Y5L-132",
+#  "make": "OFS",  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+#  "model": "OFS P5 EFU LPFR", <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+#  "mssc": [],
+#  "protocolVersion": "2.0",
+#  "sdcDateTime": "2024-03-11T23:03:24.390+01:00", <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+#  "softwareVersion": "2.0",
+#  "supportedLanguages": [
+#    "sr-RS",
+#    "sr-Cyrl-RS",
+#    "en-US"  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+#  ]
+#}
+
+
+#curl --location 'http://127.0.0.1:3566/api/pin' \
+#--header 'Authorization: Bearer 0123456789abcdef0123456789abcdef' \
+#--header 'Content-Type: text/plain' \ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ne JSON
+#--data '1234'
+
+#POST
+#Unos PIN-a bezbednosnog elementa
+#http://127.0.0.1:3566/api/pin
+#Namena ovog poziva je da otključa bezbednosni element za potrebe fiskalizacije unosom PIN koda. PIN kod se prosleđuje u zahtevu dok odgovor sadrži status kod operacije a pored status koda 
+# ukoliko je operacija uspešna odgovor sadrži HTTP 200 OK status dok u svim ostalim slučajevima vraća status HTTP 4xx ili HTTP 5xx. Mogući numerički status kodovi u odgovoru su:
+#
+#0100 - PIN je ispravno unet
+#1300 - Bezbednosni element nije prisutan
+#2400 - LPFR nije spreman
+#2800 - Pogrešan format PIN-a (očekivano 4 cifre)
+#2806 - Pogrešan format PIN-a (očekivano 4 cifre)
+#Napomena: zbog uniformnosti sa LPFR API-jima koje je propisao PURS, 
+# ovo je jedini API poziv koji na ulazu prihvata čist tekst (Content-type: text/plain).
+
+#response
+#"0100"
 
 class PaymentLine(BaseModel):
     amount: float
