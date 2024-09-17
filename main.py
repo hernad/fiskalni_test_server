@@ -3,11 +3,9 @@ from fastapi import FastAPI, Depends, HTTPException, status, Request
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
 from typing import List
-#from fastapi.security import OAuth2PasswordBearer
 import json
 
 API_KEY = "0123456789abcdef0123456789abcdef"
-
 
 PIN = "1234"
 GSC_CODE = "9999"   # sve naštimano
@@ -504,7 +502,7 @@ async def invoice(req: Request, invoice_data: InvoiceData):
             invoiceImageHtml = None,
             invoiceImagePdfBase64 = None,
             invoiceImagePngBase64 = None,
-            invoiceNumber = "RX4F7Y5L-RX4F7Y5L-138",
+            invoiceNumber = "RX4F7Y5L-RX4F7Y5L-200",
             journal = "=========== FAKE RAČUN ===========\r\n             4402692070009            \r\n       SIRIUS2010 doo Banja Luka      \r\n       Sigma-com doo Zenica      \r\n      7. Muslimanske Brigade 77      \r\n              Zenica              \r\nKasir:                        Radnik 1\r\nESIR BROJ:                      13/2.0\r\n----------- PROMET PRODAJA -----------\r\nАrtikli                               \r\n======================================\r\nNaziv  Cijena        Kol.         Ukupno\r\n " + 
                        cStavke +
                        "--------------------------------------\r\n"
@@ -577,8 +575,10 @@ async def invoice(req: Request, invoice_data: InvoiceData):
 #--header 'Content-Type: application/json' \
 #--data '{
 #    "invoiceRequest": {
+
 #        "invoiceType": "Copy",                 <<<<<<<<<<<<<<<<<<<<<<<<<<<
 #        "transactionType": "Sale",           <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 #        "referentDocumentNumber": "RX4F7Y5L-RX4F7Y5L-140", <<<<<<<<<<<<<<<
 #        "referentDocumentDT": "2024-03-12T07:48:47.626+01:00", <<<<<<<<<<<<
 #        "payment": [
@@ -615,43 +615,49 @@ async def invoice(req: Request, invoice_data: InvoiceData):
 #    }
 #}'
 
-# response kopija računa
-#{
-#  "address": "Prvog Krajiškog Korpusa 18",
-#  "businessName": "SIRIUS2010 doo Banja Luka",
-#  "district": "Banja Luka",
-#  "encryptedInternalData": "DyCdfR/iSM9miXAK3h0YU89roRF4wRjYl1mYfz....",
-#  "invoiceCounter": "6/141КП",
-#  "invoiceCounterExtension": "КП",
-#  "invoiceImageHtml": null,
-#  "invoiceImagePdfBase64": null,
-#  "invoiceImagePngBase64": null,
-#  "invoiceNumber": "RX4F7Y5L-RX4F7Y5L-141",
-#  "journal": "======= ОВО НИЈЕ ФИСКАЛНИ РАЧУН ======\r\n             4402692070009            \r\n       SIRIUS2010 doo Banja Luka      \r\n       SIRIUS2010 doo Banja Luka      \r\n      Prvog Krajiškog Korpusa 18      \r\n              Banja Luka              \r\nРеф. број:       RX4F7Y5L-RX4F7Y5L-140\r\nРеф. вријеме:     12.03.2024. 07:48:47\r\nКасир:                        Radnik 1\r\nЕСИР број:                      13/2.0\r\n----------- КОПИЈА ПРОДАЈА -----------\r\nАртикли                               \r\n======================================\r\nНазив  Цена        Кол.         Укупно\r\nArtikl 1 (F)                          \r\n      50,00       2,000         100,00\r\nArtikl 2 (F)                          \r\n     200,00       1,000         200,00\r\n--------------------------------------\r\nУкупан износ:                   300,00\r\nГотовина:                       100,00\r\nПлатна картица:                 200,00\r\n======================================\r\n======= ОВО НИЈЕ ФИСКАЛНИ РАЧУН ======\r\n======================================\r\nОзнака    Назив    Стопа         Порез\r\nF          ECAL      11%         29,73\r\n--------------------------------------\r\nУкупан износ пореза:             29,73\r\n======================================\r\nПФР вријеме:      12.03.2024. 07:49:43\r\nПФР бр.рач:      RX4F7Y5L-RX4F7Y5L-141\r\nБројач рачуна:                 6/141КП\r\n======================================\r\n======= ОВО НИЈЕ ФИСКАЛНИ РАЧУН ======\r\n",
-#  "locationName": "SIRIUS2010 doo Banja Luka",
-#  "messages": "Успешно",
-#  "mrc": "01-0001-WPYB002248000772",
-#  "requestedBy": "RX4F7Y5L",
-#  "sdcDateTime": "2024-03-12T07:49:43.171+01:00",
-#  "signature": "Zfeew71z6wpGGTXK2w....",
-#  "signedBy": "RX4F7Y5L",
-#  "taxGroupRevision": 2,
-#  "taxItems": [
-#    {
-#      "amount": 29.7297,
-#      "categoryName": "ECAL",
-#      "categoryType": 0,
-#      "label": "F",
-#      "rate": 11
-#    }
-#  ],
-#  "tin": "4402692070009",
-#  "totalAmount": 300,
-#  "totalCounter": 141,
-#  "transactionTypeCounter": 6,
-#  "verificationQRCode": "R0lGODlhhAG....",
-#  "verificationUrl": "https://sandbox.suf.poreskaupravars.org/v/?vl=A1JYNEY3WTV...="
-#}
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, access_log=False, workers=1)
+
+
+#Refundacija računa ima isti sadržaj kao i originalni račun sa postavljenim poljem 
+# invoiceRequest.transactionType na Refund i uz dodata 
+# dva polja u invoiceRequest objektu koja se referišu na prvi račun:
+
+#referentDocumentNumber (string) - broj originalnog računa
+#referentDocumentDT (timestamp) - vreme originalnog računa
+
+#Napomena: u zavisnosti od načina kako se realizuje refundacije 
+#može postojati potreba i da se načini plaćanja promene u odnosu na originalni račun.
+
+#curl --location 'http://127.0.0.1:3566/api/invoices' \
+#--header 'Authorization: Bearer 0123456789abcdef0123456789abcdef' \
+#--header 'RequestId: 12345' \
+#--header 'X-Teron-SerialNumber: 123456789ABCDEF' \
+#--header 'Content-Type: application/json' \
+#--data '{
+#    "invoiceRequest": {
+#        "invoiceType": "Normal",
+#        "transactionType": "Refund",
+#        "referentDocumentNumber": "RX4F7Y5L-RX4F7Y5L-140",
+#        "referentDocumentDT": "2024-03-12T07:48:47.626+01:00",
+#        "payment": [
+#            {
+#                "amount": 100.00,
+#                "paymentType": "Cash"
+#            }
+#        ],
+#        "items": [
+#            {
+#                "name": "Artikl 1",
+#                "labels": [
+#                    "F"
+#                ],
+#                "totalAmount": 100.00,
+#                "unitPrice": 50.00,
+#                "quantity": 2.000
+#            }
+#        ],
+#        "cashier": "Radnik 1"
+#    }
+#}'
