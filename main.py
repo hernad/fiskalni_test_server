@@ -1,11 +1,18 @@
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException, status, Request
+from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
 from typing import List
 #from fastapi.security import OAuth2PasswordBearer
 import json
 
 API_KEY = "0123456789abcdef0123456789abcdef"
+
+
+PIN = "1234"
+GSC_CODE = "9999"   # sve naštimano
+#GSC_CODE = "1300"  # bezbjednosni element nije prisutan
+#GSC_CODE = "1500"  # PIN se mora unijeti
 
 app = FastAPI()
 
@@ -245,79 +252,6 @@ async def get_attention(req: Request):
 
 #4. Obaviti standardni unos svih elemenata računa i poslati na fiskalizaciju i štampu pozivom /api/invoices(opisan u "Fiskalizacija računa"). Ukoliko je vraćena greška da bezbednosni element nije prisutan (npr. korisnik je izvukao karticu u međuvremenu) onda se vratiti na korak 2. Ukoliko je vraćena greška da je neophodan unos PIN-a (npr. korisnik je izvukao i vratio istu ili drugu karticu) onda se vratiti na korak 3. U suprotnom ovaj API će vratiti grešku ukoliko postoji problem u sadržaju računa (koji treba prikazati korisniku adekvatno na ekranu) ili odgovor da je fiskalizacija i štampa uspešno obavljena u kom slučaju se može pristupiti unosom novog računa od koraka 2. U slučaju da je vraćena greška ona može biti geška pre fiskalizacije ili greška nakon fiskalizacije ali pre štampanja računa. U slučaju da je fiskalizacija obavljena ali je greška nastala prilikom štampe računa odgovor će pored informacija o grešci sadržati i polje invoiceResponse u kom slučaju je potrebno ispraviti grešku sa štampačem (npr. ukoliko nema papira) a potom ponoviti isti poziv ali uključiti i invoiceResponse polje što je signal Teron ESIR API-u da ne radi ponovo fiskalizaciju već samo da pokuša štampu ponovo.
 
-# 
-#curl --location 'http://127.0.0.1:3566/api/status' \
-#--header 'Authorization: Bearer 0123456789abcdef0123456789abcdef'
-
-#Ovaj poziv vraća status sistema za fiskalizaciju (LPFR ili VPFR u zavisnosti od podešavanja). 
-# Glavna polja u odgovoru od interesa za integraciju sa ESIR-om su:
-
-#sdcDateTime (timestamp) - trenutno vreme na PFR-u
-#gsc: (list of string) - niz status LPFR-a. Za spisak svih statusa konsultovati PURS dokumentaciju za LPFR, glavni statusi su opisani i prethodnoj sekciji u okviru opisa niza koraka prilikom fiskalizacije računa. Ovo polje ne postoji u slučaju korišćenja VPFR-a
-#uid (string) - UID bezbednosnog elementa (LPFR, ukoliko je ubačen) odnosno sertifikata (VPFR)
-
-#          "orderId": 3,
-#          "taxRates": [
-#            {
-#              "label": "Е",
-#              "rate": 8
-#            }
-#          ]
-#        }
-#      ],
-#      "validFrom": "2005-01-01T00:00:00.000+01:00"
-#    }
-#  ],
-#  "currentTaxRates": {
-#    "groupId": 1,
-#    "taxCategories": [
-#      {
-#        "categoryType": 0,
-#        "name": "Без ПДВ",
-#        "orderId": 4,
-#        "taxRates": [
-#          {
-#            "label": "Г",
-#            "rate": 0
-#          }
-#        ]
-#      },
-#      {
-#        "categoryType": 0,
-#        "name": "Није у ПДВ",
-#        "orderId": 1,
-#        "taxRates": [
-#          {
-#            "label": "А",
-#            "rate": 0
-#          }
-#        ]
-#      },
-#      {
-#        "categoryType": 0,
-#        "name": "О-ПДВ",
-#        "orderId": 2,
-#        "taxRates": [
-#          {
-#            "label": "Ђ",
-#            "rate": 20
-#          }
-#        ]
-#      },
-#      {
-#        "categoryType": 0,
-#        "name": "П-ПДВ",
-#        "orderId": 3,
-#        "taxRates": [
-#          {
-#            "label": "Е",
-#            "rate": 10
-#          }
-#        ]
-#      }
-#    ],
-#    
-#}
 
 
 #curl --location 'http://127.0.0.1:3566/api/pin' \
@@ -328,8 +262,10 @@ async def get_attention(req: Request):
 #POST
 #Unos PIN-a bezbednosnog elementa
 #http://127.0.0.1:3566/api/pin
-#Namena ovog poziva je da otključa bezbednosni element za potrebe fiskalizacije unosom PIN koda. PIN kod se prosleđuje u zahtevu dok odgovor sadrži status kod operacije a pored status koda 
-# ukoliko je operacija uspešna odgovor sadrži HTTP 200 OK status dok u svim ostalim slučajevima vraća status HTTP 4xx ili HTTP 5xx. Mogući numerički status kodovi u odgovoru su:
+#Namena ovog poziva je da otključa bezbednosni element za potrebe fiskalizacije unosom PIN koda. 
+# PIN kod se prosleđuje u zahtevu dok odgovor sadrži status kod operacije a pored status koda 
+# ukoliko je operacija uspešna odgovor sadrži HTTP 200 OK status dok u svim ostalim slučajevima 
+# vraća status HTTP 4xx ili HTTP 5xx. Mogući numerički status kodovi u odgovoru su:
 #
 #0100 - PIN je ispravno unet
 #1300 - Bezbednosni element nije prisutan
@@ -341,6 +277,22 @@ async def get_attention(req: Request):
 
 #response
 #"0100"
+
+@app.post("/api/pin", response_class=PlainTextResponse)
+async def post_pin(req: Request):
+   
+   if not check_api_key(req):
+       return False
+    
+   body = (await req.body()).decode('utf-8')
+   response = "2400"
+   if body == PIN:
+       response = "0100"
+   elif len(body) != 4:
+       response = "2800"
+
+   return response
+
 
 class TaxRate(BaseModel):
     label: str
@@ -374,10 +326,23 @@ class Status(BaseModel):
    supportedLanguages: list[str] = []
 
 
+# 
+#curl --location 'http://127.0.0.1:3566/api/status' \
+#--header 'Authorization: Bearer 0123456789abcdef0123456789abcdef'
+
+#Ovaj poziv vraća status sistema za fiskalizaciju (LPFR ili VPFR u zavisnosti od podešavanja). 
+# Glavna polja u odgovoru od interesa za integraciju sa ESIR-om su:
+
+#sdcDateTime (timestamp) - trenutno vreme na PFR-u
+#gsc: (list of string) - niz status LPFR-a. Za spisak svih statusa konsultovati PURS dokumentaciju za LPFR, glavni statusi su opisani i prethodnoj sekciji u okviru opisa niza koraka prilikom fiskalizacije računa. Ovo polje ne postoji u slučaju korišćenja VPFR-a
+#uid (string) - UID bezbednosnog elementa (LPFR, ukoliko je ubačen) odnosno sertifikata (VPFR)
 
 @app.get("/api/status")
-async def get_status(req: Request, status_data: Status)
+async def get_status(req: Request):
 
+    if not check_api_key(req):
+        return False
+    
     taxRate0 = TaxRate( rate = 0, label = "G")
     taxRateA = TaxRate( rate = 0, label = "A")
     taxRateE = TaxRate( rate = 10, label = "E")
@@ -424,7 +389,7 @@ async def get_status(req: Request, status_data: Status)
         currentTaxRates=currentTaxRates,
         deviceSerialNumber = "01-0001-WPYB002248000772",
         gsc = [
-         "1300",
+         GSC_CODE,
          "0210"
         ],
         hardwareVersion = "1.0",
