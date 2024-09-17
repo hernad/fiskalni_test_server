@@ -15,9 +15,29 @@ def root():
     return {"hello": name}
 
 
+def check_api_key(req: Request):
+
+    token = req.headers["Authorization"].replace("Bearer ", "").strip()
+
+    if token != API_KEY:
+        raise HTTPException(
+            status_code = status.HTTP_401_UNAUTHORIZED, detail = "Unauthorized API-KEY %s" % (token)
+        )
+        return False
+
+    return True
+
 # dostupan
 #curl --location 'http://127.0.0.1:3566/api/attention' \
 #--header 'Authorization: Bearer 0123456789abcdef0123456789abcdef'
+
+@app.get("/api/attention")
+async def get_attention(req: Request):
+
+    if check_api_key(req):
+        return True
+    else:
+        return None
 
 # settings get
 # curl --location 'http://127.0.0.1:3566/api/settings' \
@@ -236,197 +256,6 @@ def root():
 #gsc: (list of string) - niz status LPFR-a. Za spisak svih statusa konsultovati PURS dokumentaciju za LPFR, glavni statusi su opisani i prethodnoj sekciji u okviru opisa niza koraka prilikom fiskalizacije računa. Ovo polje ne postoji u slučaju korišćenja VPFR-a
 #uid (string) - UID bezbednosnog elementa (LPFR, ukoliko je ubačen) odnosno sertifikata (VPFR)
 
-#{
-#  "allTaxRates": [
-#    {
-#      "groupId": 1,
-#      "taxCategories": [
-#        {
-#          "categoryType": 0,
-#          "name": "Без ПДВ",
-#          "orderId": 4,
-#          "taxRates": [
-#            {
-#              "label": "Г",
-#              "rate": 0
-#            }
-#          ]
-#        },
-#        {
-#          "categoryType": 0,
-#          "name": "Није у ПДВ",
-#          "orderId": 1,
-#          "taxRates": [
-#            {
-#              "label": "А",
-#              "rate": 0
-#            }
-#          ]
-#        },
-#        {
-#          "categoryType": 0,
-#          "name": "О-ПДВ",
-#          "orderId": 2,
-#          "taxRates": [
-#            {
-#              "label": "Ђ",
-#              "rate": 20
-#            }
-#          ]
-#        },
-#        {
-#          "categoryType": 0,
-#          "name": "П-ПДВ",
-#          "orderId": 3,
-#          "taxRates": [
-#            {
-#              "label": "Е",
-#              "rate": 10
-#            }
-#          ]
-#        }
-#      ],
-#      "validFrom": "2021-11-01T02:00:00.000+01:00"
-#    },
-#    {
-#      "groupId": 6,
-#      "taxCategories": [
-#        {
-#          "categoryType": 0,
-#          "name": "Без ПДВ",
-#          "orderId": 4,
-#          "taxRates": [
-#            {
-#              "label": "Г",
-#              "rate": 0
-#            }
-#          ]
-#        },
-#        {
-#          "categoryType": 0,
-#          "name": "Није у ПДВ",
-#          "orderId": 1,
-#          "taxRates": [
-#            {
-#              "label": "А",
-#              "rate": 0
-#            }
-#          ]
-#        },
-#        {
-#          "categoryType": 0,
-#          "name": "О-ПДВ",
-#          "orderId": 2,
-#          "taxRates": [
-#            {
-#              "label": "Ђ",
-#              "rate": 20
-#            }
-#          ]
-#        },
-#        {
-#          "categoryType": 0,
-#          "name": "П-ПДВ",
-#          "orderId": 3,
-#          "taxRates": [
-#            {
-#              "label": "Е",
-#              "rate": 10
-#            }
-#          ]
-#        }
-#      ],
-#      "validFrom": "2014-01-01T00:00:00.000+01:00"
-#    },
-#    {
-#      "groupId": 3,
-#      "taxCategories": [
-#        {
-#          "categoryType": 0,
-#          "name": "Без ПДВ",
-#          "orderId": 4,
-#          "taxRates": [
-#            {
-#              "label": "Г",
-#              "rate": 0
-#            }
-#          ]
-#        },
-#        {
-#          "categoryType": 0,
-#          "name": "Није у ПДВ",
-#          "orderId": 1,
-#          "taxRates": [
-#            {
-#              "label": "А",
-#              "rate": 0
-#            }
-#          ]
-#        },
-#        {
-#          "categoryType": 0,
-#          "name": "О-ПДВ",
-#          "orderId": 2,
-#          "taxRates": [
-#            {
-#              "label": "Ђ",
-#              "rate": 20
-#            }
-#          ]
-#        },
-#        {
-#          "categoryType": 0,
-#          "name": "П-ПДВ",
-#          "orderId": 3,
-#          "taxRates": [
-#            {
-#              "label": "Е",
-#              "rate": 8
-#            }
-#          ]
-#        }
-#      ],
-#      "validFrom": "2012-10-01T00:00:00.000+02:00"
-#    },
-#    {
-#      "groupId": 2,
-#      "taxCategories": [
-#        {
-#          "categoryType": 0,
-#          "name": "Без ПДВ",
-#          "orderId": 4,
-#          "taxRates": [
-#            {
-#              "label": "Г",
-#              "rate": 0
-#            }
-#          ]
-#        },
-#        {
-#          "categoryType": 0,
-#          "name": "Није у ПДВ",
-#          "orderId": 1,
-#          "taxRates": [
-#            {
-#              "label": "А",
-#              "rate": 0
-#            }
-#          ]
-#        },
-#        {
-#          "categoryType": 0,
-#          "name": "О-ПДВ",
-#          "orderId": 2,
-#          "taxRates": [
-#            {
-#              "label": "Ђ",
-#              "rate": 18
-#            }
-#          ]
-#        },
-#        {
-#          "categoryType": 0,
-#          "name": "П-ПДВ",
 #          "orderId": 3,
 #          "taxRates": [
 #            {
@@ -487,26 +316,7 @@ def root():
 #        ]
 #      }
 #    ],
-#    "validFrom": "2021-11-01T02:00:00.000+01:00"
-#  },
-#  "deviceSerialNumber": "01-0001-WPYB002248000772",
-#  "gsc": [
-#    "1300",
-#    "0210"
-#  ],
-#  "hardwareVersion": "1.0",
-#  "lastInvoiceNumber": "RX4F7Y5L-RX4F7Y5L-132",
-#  "make": "OFS",  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-#  "model": "OFS P5 EFU LPFR", <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-#  "mssc": [],
-#  "protocolVersion": "2.0",
-#  "sdcDateTime": "2024-03-11T23:03:24.390+01:00", <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-#  "softwareVersion": "2.0",
-#  "supportedLanguages": [
-#    "sr-RS",
-#    "sr-Cyrl-RS",
-#    "en-US"  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-#  ]
+#    
 #}
 
 
@@ -531,6 +341,109 @@ def root():
 
 #response
 #"0100"
+
+class TaxRate(BaseModel):
+    label: str
+    rate: int
+
+class TaxCategory(BaseModel):
+    categoryType: int
+    name: str
+    orderId: int
+    taxRates: list[TaxRate] = []
+     
+
+class TaxRates(BaseModel):
+   groupId: str
+   taxCategories: list[TaxCategory] = []
+   validFrom: str
+    
+class Status(BaseModel):
+   allTaxRates:  list[TaxRates] = [] 
+   currentTaxRates: list[TaxRates] = []
+   deviceSerialNumber: str
+   gsc: list[str] = []
+   hardwareVersion: str
+   lastInvoiceNumber: str
+   make: str 
+   model: str
+   mssc:  list[str] = []
+   protocolVersion: str
+   sdcDateTime: str
+   softwareVersion: str
+   supportedLanguages: list[str] = []
+
+
+
+@app.get("/api/status")
+async def get_status(req: Request, status_data: Status)
+
+    taxRate0 = TaxRate( rate = 0, label = "G")
+    taxRateA = TaxRate( rate = 0, label = "A")
+    taxRateE = TaxRate( rate = 10, label = "E")
+    taxRateD = TaxRate( rate = 20, label = "D")
+
+    taxCategory1 = TaxCategory(categoryType=0, name="Bez PDV", orderId=4, taxRates=[taxRate0])
+    taxCategory2 = TaxCategory(categoryType=0, name="Nije u PDV", orderId=1, taxRates=[taxRateA])
+    taxCategory3 = TaxCategory(categoryType=6, name="P-PDV", orderId=3, taxRates=[taxRateE])
+    taxCategory4 = TaxCategory(categoryType=6, name="D-PDV", orderId=3, taxRates=[taxRateD])
+
+    allTaxRates = [
+        TaxRates(
+            groupId="1",
+            taxCategories=[
+                taxCategory1
+            ],
+            validFrom="2021-11-01T02:00:00.000+01:00"
+        ),
+        TaxRates(
+            groupId="6",
+            taxCategories=[
+                taxCategory2,
+                taxCategory3,
+                taxCategory4
+            ],
+            validFrom=""
+        )
+    ]
+
+    currentTaxRates = [
+        TaxRates(
+            groupId="6",
+            taxCategories=[
+                taxCategory2,
+                taxCategory3,
+                taxCategory4
+            ],
+            validFrom = "2021-11-01T02:00:00.000+01:00"
+        )
+    ]
+    
+    response = Status(
+        allTaxRates=allTaxRates,
+        currentTaxRates=currentTaxRates,
+        deviceSerialNumber = "01-0001-WPYB002248000772",
+        gsc = [
+         "1300",
+         "0210"
+        ],
+        hardwareVersion = "1.0",
+        lastInvoiceNumber = "RX4F7Y5L-RX4F7Y5L-132",
+        make ="OFS",
+        model = "OFS P5 EFU LPFR",
+        mssc = [],
+        protocolVersion = "2.0",
+        sdcDateTime = "2024-03-11T23:03:24.390+01:00",
+        softwareVersion = "2.0",
+        supportedLanguages = [
+         "bs-BA",
+         "bs-Cyrl",
+         "en-US"
+        ]
+    )
+
+    return response
+    
 
 class PaymentLine(BaseModel):
     amount: float
@@ -591,6 +504,7 @@ class InvoiceData(BaseModel):
 #  "verificationUrl": "https://sandbox.suf.poreskaupravars.org/v/?vl=A1JYNEY3WTVMUlg0....="
 #}
 
+
 class TaxItems(BaseModel):
     amount: float
     categoryName: str
@@ -626,12 +540,7 @@ class InvoiceResponse(BaseModel):
     verificationQRCode: str 
     verificationUrl: str 
 
-# https://stackoverflow.com/questions/67307159/what-is-the-actual-use-of-oauth2passwordbearer
-# {"access_token": access_token, "token_type":"bearer"}
 
-#def api_token():
-#    return
-#    '{ "access_token":"%s", "token_type":"bearer"}' % (API_KEY)
 
 @app.post("/api/invoices")
 async def invoice(req: Request, invoice_data: InvoiceData):
@@ -644,13 +553,8 @@ async def invoice(req: Request, invoice_data: InvoiceData):
     payments_length = len(invoice_data.invoiceRequest.payment)
     cashier = invoice_data.invoiceRequest.cashier
 
-    token = req.headers["Authorization"].replace("Bearer ", "").strip()
-
-    if token != API_KEY:
-        raise HTTPException(
-            status_code = status.HTTP_401_UNAUTHORIZED, detail = "Unauthorized API-KEY %s" % (token)
-        )
-    else:
+    
+    if check_api_key(req):
 
         response = InvoiceResponse(
             address = "Ulica 7. Muslimanske brigade 77",
@@ -682,6 +586,8 @@ async def invoice(req: Request, invoice_data: InvoiceData):
         )
 
         return response
+    else:
+        return None
  
 
 #curl --location 'http://127.0.0.1:3566/api/invoices/search' \
