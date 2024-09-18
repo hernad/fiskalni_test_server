@@ -29,14 +29,16 @@ app = FastAPI()
 # 10. list(x) - JSON niz koji sadrži niz elemenata tipa x (gde X može biti bilo koji od navedenih tipova)
 
 
+# transactionType (string): tip transakcije, može imati vrednosti: 
+# 1. Sale (prodaja)
+# 2. Refund (refundacija)
+
 # * invoiceType (string): tip računa:
 # 1. Normal (promet), 
 # 2. Proforma (predračun), 
 # 3. Copy (kopija), 
 # 4. Training (trening), 
 # 5. Advance (avans)
-
-transactionType (string): tip transakcije, može imati vrednosti: Sale (prodaja), Refund (refundacija)
 
 # * paymentType (string): tip plaćanja, može imati vrednosti: 
 #   1. Cash (gotovina), 
@@ -407,9 +409,8 @@ async def get_status(req: Request):
         TaxRates(
             groupId="6",
             taxCategories=[
-                taxCategory2,
-                taxCategory3,
-                taxCategory4
+                taxCategory1,
+                taxCategory3
             ],
             validFrom = "2024-05-01T02:00:00.000+01:00"
         )
@@ -458,7 +459,16 @@ class ItemLine(BaseModel):
     quantity: float
 
 
-class InvoiceRequest(BaseModel):     
+#   invoiceType:
+#   1. Normal
+#   2. Copy
+
+#   Ako je copy, salje:
+#   1. referentDocumentNumber
+#   2. referentDocumentDT 
+class InvoiceRequest(BaseModel):
+    referentDocumentNumber: str | None = None
+    referentDocumentDT: str | None = None
     invoiceType: str
     transactionType: str
     payment: list[PaymentLine] = []
@@ -513,8 +523,20 @@ async def invoice(req: Request, invoice_data: InvoiceData):
 
     type = invoice_data.invoiceRequest.invoiceType
 
-    items_length = len(invoice_data.invoiceRequest.items)
-
+    #items_length = len(invoice_data.invoiceRequest.items)
+    referentDocumentNumber = invoice_data.invoiceRequest.referentDocumentNumber
+    referentDocumentDT = invoice_data.invoiceRequest.referentDocumentDT
+    print("invoice request type:", type)
+    
+    if type == "Copy":
+        if (not referentDocumentNumber) or (not referentDocumentDT):
+            raise HTTPException(
+                status_code = status.HTTP_400_BAD_REQUEST, detail = "Copy ne sadrzi referentDocumentNumber and DT"
+            )  
+        else:
+            print("referentni fiskalni dokument:", referentDocumentNumber, referentDocumentDT )  
+         
+    
     totalValue = 0
     cStavke = ""
     for item in invoice_data.invoiceRequest.items:
@@ -529,6 +551,12 @@ async def invoice(req: Request, invoice_data: InvoiceData):
     
     if check_api_key(req):
 
+        cRacun = None
+        if type == "Normal":
+            cRacun = "FISKALNI RAČUN"
+        else:
+            cRacun = "KOPIJA FISKALNOG RAČUNA"
+
         response = InvoiceResponse(
             address = "Ulica 7. Muslimanske brigade 77",
             businessName = "Sigma-com doo Zenica",
@@ -540,12 +568,15 @@ async def invoice(req: Request, invoice_data: InvoiceData):
             invoiceImagePdfBase64 = None,
             invoiceImagePngBase64 = None,
             invoiceNumber = "RX4F7Y5L-RX4F7Y5L-200",
-            journal = "=========== FAKE RAČUN ===========\r\n             4402692070009            \r\n       SIRIUS2010 doo Banja Luka      \r\n       Sigma-com doo Zenica      \r\n      7. Muslimanske Brigade 77      \r\n              Zenica              \r\nKasir:                        Radnik 1\r\nESIR BROJ:                      13/2.0\r\n----------- PROMET PRODAJA -----------\r\nАrtikli                               \r\n======================================\r\nNaziv  Cijena        Kol.         Ukupno\r\n " + 
+            journal = "=========== " + cRacun + " ===========\r\n             4402692070009            \r\n       Sigma-com doo Zenica      \r\n      7. Muslimanske Brigade 77      \r\n              Zenica              \r\nKasir:                        Radnik 1\r\nESIR BROJ:                      13/2.0\r\n----------- PROMET PRODAJA -----------\r\nАrtikli                               \r\n======================================\r\nNaziv  Cijena        Kol.         Ukupno\r\n " + 
                        cStavke +
                        "--------------------------------------\r\n"
                        + "Ukupan iznos:                   " + "%.2f" % (totalValue) +
                        "\r\nGotovina:                     " + "%.2f" % (totalValue) +
-                       "\r\n======================================\r\nOznaka    Naziv    Stopa    Porez\r\nF          ECAL      11%          9,91\r\n--------------------------------------\r\nUkupan iznos poreza:              9,91\r\n======================================\r\nПФР вријеме:      12.03.2024. 07:47:09\r\nOFS br. rač:      RX4F7Y5L-RX4F7Y5L-138\r\nBrojač računa:               100/138ZE\r\n======================================\r\n======== KRAJ FISKALNOG RAČUNA =======\r\n",
+                       "\r\n======================================\r\nOznaka    Naziv    Stopa    Porez\r\nF          ECAL      11%          9,91\r\n--------------------------------------\r\nUkupan iznos poreza:              9,91\r\n======================================\r\n" + 
+                       "PFR brijeme:      12.03.2024. 07:47:09\r\nOFS br. rač:      RX4F7Y5L-RX4F7Y5L-138" +
+                       "\r\nBrojač računa:               100/138ZE\r\n======================================" +
+                       "\r\n======== KRAJ " + cRacun + "=======\r\n",
             locationName = "Sigma-com doo Zenica poslovnica Sarajevo",
             messages = "Uspješno",
             mrc = "01-0001-WPYB002248000772",
