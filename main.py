@@ -4,6 +4,8 @@ from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
 from typing import List
 import json
+from random import randint
+import datetime
 
 API_KEY = "0123456789abcdef0123456789abcdef"
 
@@ -526,7 +528,13 @@ async def invoice(req: Request, invoice_data: InvoiceData):
     #items_length = len(invoice_data.invoiceRequest.items)
     referentDocumentNumber = invoice_data.invoiceRequest.referentDocumentNumber
     referentDocumentDT = invoice_data.invoiceRequest.referentDocumentDT
+    transactionType = invoice_data.invoiceRequest.transactionType
+    print("== invoice request ==")
     print("invoice request type:", type)
+    print("transaction type:", transactionType)
+
+    for payment in invoice_data.invoiceRequest.payment:
+        print("paymentType:", payment.paymentType, " ; paymentAmount:", payment.amount )
     
     if type == "Copy":
         if (not referentDocumentNumber) or (not referentDocumentDT):
@@ -536,7 +544,9 @@ async def invoice(req: Request, invoice_data: InvoiceData):
         else:
             print("referentni fiskalni dokument:", referentDocumentNumber, referentDocumentDT )  
          
-    
+    if transactionType == "Refund":
+        print("refund referentni fiskalni dokument:", referentDocumentNumber, referentDocumentDT )  
+         
     totalValue = 0
     cStavke = ""
     for item in invoice_data.invoiceRequest.items:
@@ -545,10 +555,20 @@ async def invoice(req: Request, invoice_data: InvoiceData):
         cStavke += "%s  %.2f  %.2f %.2f\r\n" % (item.name, item.quantity, item.unitPrice, item.totalAmount)
 
 
+    print("totalValue:", totalValue)
+
     payments_length = len(invoice_data.invoiceRequest.payment)
     cashier = invoice_data.invoiceRequest.cashier
 
-    
+    cInvoiceNumber = str(randint(1,999)).zfill(3)
+
+    cFullInvoiceNumber = "AX4F7Y5L-BX4F7Y5L-" + cInvoiceNumber
+
+    cDTNow = datetime.datetime.now().isoformat()
+    #>>> '2024-08-01T14:38:32.499588'
+
+
+
     if check_api_key(req):
 
         cRacun = None
@@ -562,26 +582,26 @@ async def invoice(req: Request, invoice_data: InvoiceData):
             businessName = "Sigma-com doo Zenica",
             district = "ZEDO",
             encryptedInternalData = "Vvwq4nVn/wIQFAKE",
-            invoiceCounter = "100/138ZE",
+            invoiceCounter = "100/" + cInvoiceNumber + "ZE",
             invoiceCounterExtension = "ZE",
             invoiceImageHtml = None,
             invoiceImagePdfBase64 = None,
             invoiceImagePngBase64 = None,
-            invoiceNumber = "RX4F7Y5L-RX4F7Y5L-200",
+            invoiceNumber = cFullInvoiceNumber,
             journal = "=========== " + cRacun + " ===========\r\n             4402692070009            \r\n       Sigma-com doo Zenica      \r\n      7. Muslimanske Brigade 77      \r\n              Zenica              \r\nKasir:                        Radnik 1\r\nESIR BROJ:                      13/2.0\r\n----------- PROMET PRODAJA -----------\r\nАrtikli                               \r\n======================================\r\nNaziv  Cijena        Kol.         Ukupno\r\n " + 
                        cStavke +
                        "--------------------------------------\r\n"
                        + "Ukupan iznos:                   " + "%.2f" % (totalValue) +
                        "\r\nGotovina:                     " + "%.2f" % (totalValue) +
                        "\r\n======================================\r\nOznaka    Naziv    Stopa    Porez\r\nF          ECAL      11%          9,91\r\n--------------------------------------\r\nUkupan iznos poreza:              9,91\r\n======================================\r\n" + 
-                       "PFR brijeme:      12.03.2024. 07:47:09\r\nOFS br. rač:      RX4F7Y5L-RX4F7Y5L-138" +
+                       "PFR brijeme:      12.03.2024. 07:47:09\r\nOFS br. rač:      " + cFullInvoiceNumber +
                        "\r\nBrojač računa:               100/138ZE\r\n======================================" +
                        "\r\n======== KRAJ " + cRacun + "=======\r\n",
             locationName = "Sigma-com doo Zenica poslovnica Sarajevo",
             messages = "Uspješno",
             mrc = "01-0001-WPYB002248000772",
             requestedBy = "RX4F7Y5L",
-            sdcDateTime = "2024-09-15T07:47:09.548+01:00",
+            sdcDateTime = cDTNow,  #"2024-09-15T07:47:09.548+01:00",
             signature = "Mw+IB0vgnaMjYrwA7m7zhtRseRIZFAKE",
             signedBy = "RX4F7Y5L",
             taxGroupRevision = 2,
