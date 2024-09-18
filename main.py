@@ -14,6 +14,39 @@ GSC_CODE = "9999"   # sve naštimano
 
 app = FastAPI()
 
+
+# Tipovi podataka
+
+# 1. string - tekstualno polje
+# 2. int - celobrojna vrednost
+# 3. boolean - logičko polje (true ili false)
+# 4. money - decimalni broj sa dve decimale
+# 5. quantity - decimalni broj sa tri decimale _______________
+# 6. percent - decimalni broj sa dve decimale
+# 7. timestamp - datum i vreme u ISO 8601 formatu sa vremenskom zonom (primer: 2023-11-15T13:31:50.000+01:00)
+# 8. uuid - UUID v4
+# 9. object - JSON objekat koji sadrži niz atribute i vrednosti
+# 10. list(x) - JSON niz koji sadrži niz elemenata tipa x (gde X može biti bilo koji od navedenih tipova)
+
+
+# * invoiceType (string): tip računa:
+# 1. Normal (promet), 
+# 2. Proforma (predračun), 
+# 3. Copy (kopija), 
+# 4. Training (trening), 
+# 5. Advance (avans)
+
+transactionType (string): tip transakcije, može imati vrednosti: Sale (prodaja), Refund (refundacija)
+
+# * paymentType (string): tip plaćanja, može imati vrednosti: 
+#   1. Cash (gotovina), 
+#   2. Card (platna kartica), 
+#   3. Check (ček), 
+#   4. WireTransfer (prenos na račun), 
+#   5. Voucher (vaučer), 
+#   6. MobileMoney (instant plaćanje), 
+#   7. Other (drugo bezgotovinsko plaćanje)
+
 @app.get("/")
 def root():
     name = "hernad"
@@ -378,7 +411,7 @@ async def get_status(req: Request):
                 taxCategory3,
                 taxCategory4
             ],
-            validFrom = "2021-11-01T02:00:00.000+01:00"
+            validFrom = "2024-05-01T02:00:00.000+01:00"
         )
     ]
     
@@ -398,9 +431,13 @@ async def get_status(req: Request):
         protocolVersion = "2.0",
         sdcDateTime = "2024-09-15T23:03:24.390+01:00",
         softwareVersion = "2.0",
+        
+        # https://localizely.com/language-code/bs/
+
         supportedLanguages = [
          "bs-BA",
-         "bs-Cyrl",
+         "bs-Cyrl-BA",
+         "sr-BA",
          "en-US"
         ]
     )
