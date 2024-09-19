@@ -6,9 +6,10 @@ from typing import List
 import json
 from random import randint
 import datetime
+from enum import Enum
 
 API_KEY = "0123456789abcdef0123456789abcdef"
-
+SEND_CIRILICA = True
 PIN = "1234"
 GSC_CODE = "9999"   # sve naštimano
 #GSC_CODE = "1300"  # bezbjednosni element nije prisutan
@@ -383,9 +384,19 @@ async def get_status(req: Request):
     taxRateE = TaxRate( rate = 10, label = "E")
     taxRateD = TaxRate( rate = 20, label = "D")
 
-    taxCategory1 = TaxCategory(categoryType=0, name="Bez PDV", orderId=4, taxRates=[taxRate0])
+
+    if SEND_CIRILICA:
+        taxCategory1 = TaxCategory(categoryType=0, name="Без ПДВ", orderId=4, taxRates=[taxRate0])
+    else:
+        taxCategory1 = TaxCategory(categoryType=0, name="Bez PDV Ž-kat", orderId=4, taxRates=[taxRate0])
+
     taxCategory2 = TaxCategory(categoryType=0, name="Nije u PDV", orderId=1, taxRates=[taxRateA])
-    taxCategory3 = TaxCategory(categoryType=6, name="P-PDV", orderId=3, taxRates=[taxRateE])
+    
+    if SEND_CIRILICA:
+        taxCategory3 = TaxCategory(categoryType=6, name="Г-A-Ђ-Љ П-ПДВ", orderId=3, taxRates=[taxRateE])
+    else:
+        taxCategory3 = TaxCategory(categoryType=6, name="P-PDV", orderId=3, taxRates=[taxRateE])
+    
     taxCategory4 = TaxCategory(categoryType=6, name="D-PDV", orderId=3, taxRates=[taxRateD])
 
     allTaxRates = [
@@ -517,19 +528,21 @@ class InvoiceResponse(BaseModel):
     verificationUrl: str 
 
 
-
 @app.post("/api/invoices")
 async def invoice(req: Request, invoice_data: InvoiceData):
 
     # https://github.com/fastapi/fastapi/discussions/9601
 
     type = invoice_data.invoiceRequest.invoiceType
+    cashier = invoice_data.invoiceRequest.cashier
+
 
     #items_length = len(invoice_data.invoiceRequest.items)
     referentDocumentNumber = invoice_data.invoiceRequest.referentDocumentNumber
     referentDocumentDT = invoice_data.invoiceRequest.referentDocumentDT
     transactionType = invoice_data.invoiceRequest.transactionType
     print("== invoice request ==")
+    print("invoice request type:", cashier)
     print("invoice request type:", type)
     print("transaction type:", transactionType)
 
@@ -557,8 +570,7 @@ async def invoice(req: Request, invoice_data: InvoiceData):
 
     print("totalValue:", totalValue)
 
-    payments_length = len(invoice_data.invoiceRequest.payment)
-    cashier = invoice_data.invoiceRequest.cashier
+    #payments_length = len(invoice_data.invoiceRequest.payment)
 
     cInvoiceNumber = str(randint(1,999)).zfill(3)
 
@@ -566,8 +578,6 @@ async def invoice(req: Request, invoice_data: InvoiceData):
 
     cDTNow = datetime.datetime.now().isoformat()
     #>>> '2024-08-01T14:38:32.499588'
-
-
 
     if check_api_key(req):
 
@@ -632,27 +642,65 @@ async def invoice(req: Request, invoice_data: InvoiceData):
 #    "paymentTypes": ["Cash","WireTransfer"]
 #}' 
 
+class InvoiceTypes(str, Enum):
+    normal = "Normal"
+    advance = "Advance"
+    
+class TransactionTypes(str, Enum):
+    sale = "Sale"
+    refund = "Refund"
 
-#RX4F7Y5L-RX4F7Y5L-1,Normal,Sale,2024-03-06T17:33:12.582+01:00,10.0000
-#RX4F7Y5L-RX4F7Y5L-131,Normal,Sale,2024-03-11T20:29:05.329+01:00,10.0000
-#RX4F7Y5L-RX4F7Y5L-132,Normal,Sale,2024-03-11T20:29:25.422+01:00,15.0000
-#RX4F7Y5L-RX4F7Y5L-133,Normal,Sale,2024-03-11T23:05:53.608+01:00,100.0000
-#RX4F7Y5L-RX4F7Y5L-134,Normal,Sale,2024-03-11T23:13:55.829+01:00,100.0000
-#RX4F7Y5L-RX4F7Y5L-135,Normal,Sale,2024-03-11T23:16:03.098+01:00,300.0000
-#RX4F7Y5L-RX4F7Y5L-137,Normal,Refund,2024-03-11T23:19:54.853+01:00,100.0000
-#RX4F7Y5L-RX4F7Y5L-138,Normal,Sale,2024-03-12T07:47:09.548+01:00,100.0000
-#RX4F7Y5L-RX4F7Y5L-139,Normal,Sale,2024-03-12T07:47:38.530+01:00,100.0000
-#RX4F7Y5L-RX4F7Y5L-140,Normal,Sale,2024-03-12T07:48:47.626+01:00,300.0000
-#RX4F7Y5L-RX4F7Y5L-142,Normal,Refund,2024-03-12T07:50:19.735+01:00,100.0000
-#RX4F7Y5L-RX4F7Y5L-143,Advance,Sale,2024-03-12T07:51:53.207+01:00,100.0000
-#RX4F7Y5L-RX4F7Y5L-144,Advance,Sale,2024-03-12T07:53:26.177+01:00,400.0000
-#RX4F7Y5L-RX4F7Y5L-145,Advance,Refund,2024-03-12T07:55:07.582+01:00,500.0000
-#RX4F7Y5L-RX4F7Y5L-146,Normal,Sale,2024-03-12T07:55:09.365+01:00,1000.0000
+class PaymentTypes(str, Enum):
+    cash = "Cash"
+    wireTransfer = "WireTransfer"
+    card = "Card"
+    other = "Other"
+
+
+class InvoiceSearch(BaseModel):
+    fromDate: datetime.date
+    toDate: datetime.date
+    amountFrom: float | None = None
+    amountTo: float | None = None
+    invoiceTypes: list[InvoiceTypes]
+    transactionTypes: list[TransactionTypes]
+    paymentTypes: list[PaymentTypes]
+
+
+@app.get("/api/invoices/search")
+async def invoices_search(req: Request, invoiceSearchData: InvoiceSearch):
+
+
+    print("================= invoice search ==============================")
+    print( "search from:", invoiceSearchData.fromDate, " to: ",  invoiceSearchData.toDate)
+
+
 #RX4F7Y5L-RX4F7Y5L-147,Advance,Sale,2024-03-12T07:56:07.043+01:00,100.0000
 #RX4F7Y5L-RX4F7Y5L-148,Advance,Sale,2024-03-12T07:57:16.884+01:00,400.0000
-#RX4F7Y5L-RX4F7Y5L-149,Advance,Refund,2024-03-12T07:59:21.414+01:00,500.0000
-#RX4F7Y5L-RX4F7Y5L-150,Normal,Sale,2024-03-12T08:03:39.781+01:00,1000.0000
-#RX4F7Y5L-RX4F7Y5L-151,Advance,Sale,2024-03-12T08:05:12.753+01:00,100.0000
+
+    lista_racuna = """RX4F7Y5L-RX4F7Y5L-1,Normal,Sale,2024-03-06T17:33:12.582+01:00,10.0000
+RX4F7Y5L-RX4F7Y5L-131,Normal,Sale,2024-03-11T20:29:05.329+01:00,10.0000
+RX4F7Y5L-RX4F7Y5L-132,Normal,Sale,2024-03-11T20:29:25.422+01:00,15.0000
+RX4F7Y5L-RX4F7Y5L-133,Normal,Sale,2024-03-11T23:05:53.608+01:00,100.0000
+RX4F7Y5L-RX4F7Y5L-134,Normal,Sale,2024-03-11T23:13:55.829+01:00,100.0000
+RX4F7Y5L-RX4F7Y5L-135,Normal,Sale,2024-03-11T23:16:03.098+01:00,300.0000
+RX4F7Y5L-RX4F7Y5L-137,Normal,Refund,2024-03-11T23:19:54.853+01:00,100.0000
+RX4F7Y5L-RX4F7Y5L-138,Normal,Sale,2024-03-12T07:47:09.548+01:00,100.0000
+RX4F7Y5L-RX4F7Y5L-139,Normal,Sale,2024-03-12T07:47:38.530+01:00,100.0000
+RX4F7Y5L-RX4F7Y5L-140,Normal,Sale,2024-03-12T07:48:47.626+01:00,300.0000
+RX4F7Y5L-RX4F7Y5L-142,Normal,Refund,2024-03-12T07:50:19.735+01:00,100.0000
+RX4F7Y5L-RX4F7Y5L-143,Advance,Sale,2024-03-12T07:51:53.207+01:00,100.0000
+RX4F7Y5L-RX4F7Y5L-144,Advance,Sale,2024-03-12T07:53:26.177+01:00,400.0000
+RX4F7Y5L-RX4F7Y5L-145,Advance,Refund,2024-03-12T07:55:07.582+01:00,500.0000
+"""
+
+    if check_api_key(req):
+        return lista_racuna
+    
+
+    return lista_racuna
+
+
 
 
 # kopija računa
