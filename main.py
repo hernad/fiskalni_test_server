@@ -563,10 +563,11 @@ async def invoice(req: Request, invoice_data: InvoiceData):
     totalValue = 0
     cStavke = ""
     for item in invoice_data.invoiceRequest.items:
-        print(item)
         totalValue += item.totalAmount
-        cStavke += "%s  %.2f  %.2f %.2f\r\n" % (item.name, item.quantity, item.unitPrice, item.totalAmount)
-
+        cStavka = "%s quantity: %.2f unitPrice: %.2f  totalAmount: %.2f\r\n" % (item.name, item.quantity, item.unitPrice, item.totalAmount)
+        cStavke += cStavka
+        print(cStavka)
+    print(cStavke)
 
     print("totalValue:", totalValue)
 
