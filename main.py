@@ -779,6 +779,13 @@ RX4F7Y5L-RX4F7Y5L-145,Advance,Refund,2024-03-12T07:55:07.582+01:00,500.0000
 #}'
 
 
+@app.get('/api/invoices/{invoiceNumber}?receiptLayout=Slip&imageFormat=Png&includeHeaderAndFooter=true')
+async def get_invoice(req: Request, invoiceNumber: str):
+    print("Invoice number=", invoiceNumber)
+    
+
+#curl --location 'http://127.0.0.1:3566/api/invoices/RX4F7Y5L-RX4F7Y5L-138?receiptLayout=Slip&imageFormat=Png&includeHeaderAndFooter=true' \
+#--header 'Authorization: Bearer 0123456789abcdef0123456789abcdef'
 
 
 #{
