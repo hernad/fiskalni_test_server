@@ -567,7 +567,7 @@ async def invoice(req: Request, invoice_data: InvoiceData):
     referentDocumentDT = invoice_data.invoiceRequest.referentDocumentDT
     transactionType = invoice_data.invoiceRequest.transactionType
     print("== invoice request ==")
-    print("invoice request type:", cashier)
+    print("cahiser:", cashier)
     print("invoice request type:", type)
     print("transaction type:", transactionType)
 
