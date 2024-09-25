@@ -10,6 +10,9 @@ from enum import Enum
 
 API_KEY = "0123456789abcdef0123456789abcdef"
 SEND_CIRILICA = True
+CIRILICA_E = "Е"
+CIRILICA_K = "К"
+
 PIN = "1234"
 GSC_CODE = "9999"   # sve naštimano
 #GSC_CODE = "1300"  # bezbjednosni element nije prisutan
@@ -590,10 +593,11 @@ async def invoice(req: Request, invoice_data: InvoiceData):
         totalValue += item.totalAmount
         nDiscount = item.discount or 0.0
         nDiscountAmount = item.discountAmount or 0.00
-        cStavka = "%s quantity: %.2f unitPrice: %.2f discount: %.2f discountAmount: %.2f  totalAmount: %.2f\r\n" % (item.name, item.quantity, item.unitPrice, nDiscount, nDiscountAmount, item.totalAmount)
+        label = item.labels[0]
+        cStavka = "%s quantity: %.2f unitPrice: %.2f discount: %.2f discountAmount: %.2f  totalAmount: %.2f label: %s\r\n" % (item.name, item.quantity, item.unitPrice, nDiscount, nDiscountAmount, item.totalAmount, label)
         cStavke += cStavka
         print(cStavka)
-    print(cStavke)
+    #print(cStavke)
 
     print("totalValue:", totalValue)
 
@@ -694,7 +698,7 @@ class InvoiceSearch(BaseModel):
     paymentTypes: list[PaymentTypes]
 
 
-@app.get("/api/invoices/search")
+@app.post("/api/invoices/search")
 async def invoices_search(req: Request, invoiceSearchData: InvoiceSearch):
 
 
@@ -812,7 +816,7 @@ async def get_invoice(invoiceNumber: str, imageFormat: str | None = None, includ
                     "discount": None,
                     "discountAmount": None,
                     "gtin": None,
-                    "labels": [
+                    "labels": [ CIRILICA_E ] if SEND_CIRILICA else [
                         "E"
                     ],
                     "name": "Artikl 1",
