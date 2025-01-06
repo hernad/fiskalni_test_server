@@ -584,7 +584,7 @@ async def invoice(req: Request, invoice_data: InvoiceData):
             print("referentni fiskalni dokument:", referentDocumentNumber, referentDocumentDT )  
          
     if transactionType == "Refund":
-        print("refund referentni fiskalni dokument:", referentDocumentNumber, referentDocumentDT )  
+        print("refund referentni fiskalni dokument broj:", referentDocumentNumber, "datum:", referentDocumentDT )  
          
     totalValue = 0
     cStavke = ""
